@@ -8,7 +8,7 @@ app.use(cors());
 
 // Aiven క్లౌడ్ MySQL డేటాబేస్ కనెక్షన్ సెట్టింగ్స్ (100% పర్ఫెక్ట్ సింటాక్స్)
 const db = mysql.createConnection({
-    host: '://aivencloud.com',       
+    host: 'mysql-16c0f46e-killoproduction992-5a4d.e.aivencloud.com', // ఇక్కడ ఈ పూర్తి పెద్ద అడ్రస్ ఉండాలి బ్రో
     user: 'avnadmin',       
     password: 'AVNS_BALZVt0VnvmtF9kyJvF',       
     database: 'defaultdb', 
@@ -17,6 +17,7 @@ const db = mysql.createConnection({
         rejectUnauthorized: false
     }
 });
+
 
 
 db.connect((err) => {
