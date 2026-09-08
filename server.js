@@ -7,7 +7,18 @@ app.use(express.json());
 app.use(cors());
 
 // 1. MySQL డేటాబేస్ కనెక్షన్ సెట్టింగ్స్
+const db = // Aiven క్లౌడ్ MySQL డేటాబేస్ కనెక్షన్ సెట్టింగ్స్
 const db = mysql.createConnection({
+    host: '://aivencloud.com',       
+    user: 'avnadmin',       
+    password: 'AVNS_BALZVt0VnvmtF9kyJvF',       
+    database: 'defaultdb', 
+    port: 13743,
+    ssl: {
+        rejectUnauthorized: false // Aiven క్లౌడ్ డేటాబేస్‌కి SSL సెక్యూరిటీ కనెక్షన్ కోసం ఇది ముఖ్యం
+    }
+});
+
     host: 'localhost',
     user: 'root',       // మీ MySQL యూజర్‌నేమ్
     password: '',       // మీ MySQL పాస్‌వర్డ్ (ఉంటే ఇవ్వండి, లేదంటే ఖాళీగా ఉంచండి)
