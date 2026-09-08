@@ -6,8 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// 1. MySQL డేటాబేస్ కనెక్షన్ సెట్టింగ్స్
-const db = // Aiven క్లౌడ్ MySQL డేటాబేస్ కనెక్షన్ సెట్టింగ్స్
+// Aiven క్లౌడ్ MySQL డేటాబేస్ కనెక్షన్ సెట్టింగ్స్ (100% పర్ఫెక్ట్ సింటాక్స్)
 const db = mysql.createConnection({
     host: '://aivencloud.com',       
     user: 'avnadmin',       
@@ -15,42 +14,52 @@ const db = mysql.createConnection({
     database: 'defaultdb', 
     port: 13743,
     ssl: {
-        rejectUnauthorized: false // Aiven క్లౌడ్ డేటాబేస్‌కి SSL సెక్యూరిటీ కనెక్షన్ కోసం ఇది ముఖ్యం
+        rejectUnauthorized: false
     }
-});
-
-    host: 'localhost',
-    user: 'root',       // మీ MySQL యూజర్‌నేమ్
-    password: '',       // మీ MySQL పాస్‌వర్డ్ (ఉంటే ఇవ్వండి, లేదంటే ఖాళీగా ఉంచండి)
-    database: 'ai_studio_db' // మీ డేటాబేస్ పేరు
 });
 
 db.connect((err) => {
     if (err) {
-        console.error('డేటాబేస్ కనెక్ట్ అవ్వలేదు: ' + err.stack);
+        console.error('Database connection failed: ' + err.stack);
         return;
     }
-    console.log('✅ MySQL డేటాబేస్ కనెక్ట్ అయ్యింది!');
+    console.log('✅ MySQL Database Connected to Aiven Cloud!');
 });
 
-// 2. వెబ్‌సైట్ నుండి JSON డేటా తీసుకోవడానికి API ఎండ్‌పాయింట్
+// వెబ్‌సైట్ నుండి JSON డేటా తీసుకోవడానికి API ఎండ్‌పాయింట్
 app.post('/api/save-json', (req, res) => {
-    const fullJsonData = JSON.stringify(req.body); // పూర్తి JSON ని స్ట్రింగ్‌లా మారుస్తున్నాం
+    const fullJsonData = JSON.stringify(req.body); 
     
-    // 'ai_data' అనే టేబుల్‌లో 'json_content' అనే కాలమ్‌లో సేవ్ చేయడానికి క్వెరీ
-    const query = "INSERT INTO ai_data (json_content) VALUES (?)"; 
-    
-    db.query(query, [fullJsonData], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: "డేటాబేస్ ఎర్రర్!" });
+    // Aiven క్లౌడ్ డేటాబేస్‌లో 'ai_data' టేబుల్ లేకపోతే క్రియేట్ చేయడానికి ఒక క్వెరీ
+    const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS ai_data (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            json_content LONGTEXT, 
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+    `;
+
+    db.query(createTableQuery, (tableErr) => {
+        if (tableErr) {
+            console.error("Table creation error:", tableErr);
+            return res.status(500).json({ error: "Database Table Error!" });
         }
-        res.json({ message: "డేటాబేస్‌లో JSON డేటా విజయవంతంగా సేవ్ అయ్యింది!" });
+
+        // టేబుల్ ఉన్నాక డేటా ఇన్సర్ట్ చేయడం
+        const insertQuery = "INSERT INTO ai_data (json_content) VALUES (?)"; 
+        db.query(insertQuery, [fullJsonData], (err, result) => {
+            if (err) {
+                console.error("Insert error:", err);
+                return res.status(500).json({ error: "Database Insert Error!" });
+            }
+            res.json({ message: "JSON data saved successfully to Aiven Cloud!" });
+        });
     });
 });
+
 // వెబ్‌సైట్ ఓపెన్ చేసినప్పుడు ఆటోమేటిక్‌గా index.html పేజీని చూపించడానికి ఈ కోడ్
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.listen(5000, () => console.log('🚀 సర్వర్ పోర్ట్ 5000 లో రన్ అవుతుంది...'));
+app.listen(5000, () => console.log('🚀 Server running on port 5000...'));
