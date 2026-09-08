@@ -37,5 +37,9 @@ app.post('/api/save-json', (req, res) => {
         res.json({ message: "డేటాబేస్‌లో JSON డేటా విజయవంతంగా సేవ్ అయ్యింది!" });
     });
 });
+// వెబ్‌సైట్ ఓపెన్ చేసినప్పుడు ఆటోమేటిక్‌గా index.html పేజీని చూపించడానికి ఈ కోడ్
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
 
 app.listen(5000, () => console.log('🚀 సర్వర్ పోర్ట్ 5000 లో రన్ అవుతుంది...'));
