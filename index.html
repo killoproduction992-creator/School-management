@@ -33,7 +33,7 @@
                 const jsonData = await responseJson.json();
 
                 // ఆ డేటాను బ్యాకెండ్ సర్వర్‌కి (Node.js) పంపడం
-                const result = await fetch('/api/save-json', {
+                const result = await fetch('https://onrender.com', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(jsonData)
