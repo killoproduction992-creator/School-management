@@ -33,7 +33,9 @@
                 const jsonData = await responseJson.json();
 
                 // ఆ డేటాను బ్యాకెండ్ సర్వర్‌కి (Node.js) పంపడం
-                const result = await fetch('https://onrender.com', {
+                        // ఇది నీ వెబ్‌సైట్ ఏ ఆన్‌లైన్ URL లో రన్ అవుతుందో ఆ అడ్రస్‌ను ఆటోమేటిక్‌గా తీసుకుంటుంది బ్రో
+        const result = await fetch(window.location.origin + '/api/save-json', {
+
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(jsonData)
