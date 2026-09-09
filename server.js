@@ -10,11 +10,12 @@ app.use(express.static(__dirname));
 
 const mysql = require('mysql2');
 
+// ఈ కింద ఉన్న 'const db = ...' కోడ్‌కి పైన 'const mysql = ...' అని ఉంటే దాన్ని తీసేయండి.
+
 const db = mysql.createPool({
-    // Render లో మీరు సెట్ చేసిన Environment Variables నుండి ఈ వివరాలు ఆటోమేటిక్‌గా వస్తాయి
-    host: process.env.DB_HOST || 'mysql-16c0f46e-killoproduction992-5a4d.e.aivencloud.com',
+    host: process.env.DB_HOST || '://aivencloud.com',
     user: process.env.DB_USER || 'avnadmin',
-    password: process.env.DB_PASSWORD, // ఇక్కడ మీ ఒరిజినల్ Aiven పాస్‌వర్డ్ ఆటోమేటిక్‌గా రీడ్ అవుతుంది
+    password: process.env.DB_PASSWORD, 
     database: process.env.DB_NAME || 'defaultdb',
     port: parseInt(process.env.DB_PORT) || 13743,
     ssl: {
@@ -24,6 +25,16 @@ const db = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0
 });
+
+db.getConnection((err, connection) => {
+    if (err) {
+        console.error('Database connection failed:', err.message);
+    } else {
+        console.log('Aiven MySQL Database Connected Successfully! 🚀');
+        connection.release();
+    }
+});
+
 
 // కనెక్షన్ కరెక్ట్‌గా అయిందో లేదో Render Logs లో చూడటానికి ఈ చిన్న టెస్ట్ కోడ్ కింద ఉంచండి
 db.getConnection((err, connection) => {
