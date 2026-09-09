@@ -67,4 +67,16 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
+// క్లౌడ్ డేటాబేస్ నుండి సేవ్ అయిన డేటాను వెనక్కి తెచ్చి వెబ్‌సైట్‌కి ఇవ్వడానికి API
+app.get('/api/get-json', (req, res) => {
+    const fetchQuery = "SELECT * FROM ai_data ORDER BY id DESC";
+    db.query(fetchQuery, (err, results) => {
+        if (err) {
+            console.error("Fetch error:", err);
+            return res.status(500).json({ error: "Database Fetch Error!" });
+        }
+        res.json(results);
+    });
+});
+
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}...`));

@@ -6,10 +6,16 @@
     <title>AI Studio to MySQL Project</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; text-align: center; }
-        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); display: inline-block; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); display: inline-block; width: 80%; max-width: 800px; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin: 10px; }
         button:hover { background-color: #0056b3; }
+        .btn-view { background-color: #28a745; }
+        .btn-view:hover { background-color: #218838; }
         #status { margin-top: 15px; font-weight: bold; color: green; }
+        table { width: 100%; margin-top: 25px; border-collapse: collapse; background: white; text-align: left; }
+        th, td { padding: 12px; border: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+        pre { white-space: pre-wrap; word-wrap: break-word; background: #fafafa; padding: 5px; margin: 0; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -19,31 +25,77 @@
         <p>Clicking the button below will save the JSON data to the MySQL database.</p>
         
         <button onclick="sendDataToDatabase()">Save data in MySQL</button>
+        <button class="btn-view" onclick="fetchDataFromDatabase()">View Saved Data</button>
+        
         <div id="status"></div>
+
+        <!-- క్లౌడ్ డేటాబేస్ నుండి వచ్చే డేటాను చూపించే టేబుల్ -->
+        <table id="dataTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th style="width: 10%;">ID</th>
+                    <th style="width: 65%;">JSON Content</th>
+                    <th style="width: 25%;">Saved At</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
     </div>
 
     <script>
         async function sendDataToDatabase() {
             const statusDiv = document.getElementById('status');
             statusDiv.innerText = "Sending data...";
-
             try {
-                // 读取 data.json 文件
                 const responseJson = await fetch('data.json'); 
                 const jsonData = await responseJson.json();
-
-                // 发送数据到 Render 后端
                 const result = await fetch('/api/save-json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(jsonData)
                 });
-
                 const data = await result.json();
                 statusDiv.innerText = "✅ JSON data saved successfully to Aiven Cloud!";
             } catch (error) {
                 console.error(error);
-                statusDiv.innerText = "❌ An error occurred! (Check if the backend server is running)";
+                statusDiv.innerText = "❌ An error occurred!";
+            }
+        }
+
+        // క్లౌడ్ నుండి డేటా తెచ్చి టేబుల్‌లో చూపించే సరికొత్త ఫంక్షన్ బ్రో
+        async function fetchDataFromDatabase() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = "Fetching data from Cloud...";
+            try {
+                const response = await fetch('/api/get-json');
+                const data = await response.json();
+                
+                const tableBody = document.getElementById('tableBody');
+                tableBody.innerHTML = ""; // పాత డేటా క్లియర్ చేయడం
+                
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    
+                    // JSON కంటెంట్‌ను అందంగా ఫార్మాట్ చేయడం
+                    let formattedJson = row.json_content;
+                    try {
+                        const parsed = JSON.parse(row.json_content);
+                        formattedJson = JSON.stringify(parsed, null, 2);
+                    } catch(e) {}
+
+                    tr.innerHTML = `
+                        <td>${row.id}</td>
+                        <td><pre>${formattedJson}</pre></td>
+                        <td>${new Date(row.created_at).toLocaleString()}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+                
+                document.getElementById('dataTable').style.display = "table";
+                statusDiv.innerText = "✅ Data loaded successfully from Aiven Cloud!";
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerText = "❌ Error fetching data!";
             }
         }
     </script>
