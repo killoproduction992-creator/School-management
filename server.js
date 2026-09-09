@@ -9,11 +9,11 @@ app.use(cors());
 app.use(express.static(__dirname));
 
 const db = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: Number(process.env.DB_PORT),
+    host: 'mysql-16c0f46e-killoproduction992-5a4d.e.aivencloud.com',
+    user: 'avnadmin',
+    password: 'YOUR_AIVEN_PASSWORD',
+    database: 'defaultdb',
+    port: 13743,
     ssl: {
         rejectUnauthorized: false
     },
