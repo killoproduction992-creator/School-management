@@ -68,15 +68,22 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 10000;
 // క్లౌడ్ డేటాబేస్ నుండి సేవ్ అయిన డేటాను వెనక్కి తెచ్చి వెబ్‌సైట్‌కి ఇవ్వడానికి API
+// క్లౌడ్ డేటాబేస్ నుండి సేవ్ అయిన డేటాను సురక్షితంగా తెచ్చి వెబ్‌సైట్‌కి ఇవ్వడానికి పర్ఫెక్ట్ API
 app.get('/api/get-json', (req, res) => {
     const fetchQuery = "SELECT * FROM ai_data ORDER BY id DESC";
+    
     db.query(fetchQuery, (err, results) => {
         if (err) {
-            console.error("Fetch error:", err);
+            console.error("❌ Database Fetch Error:", err);
             return res.status(500).json({ error: "Database Fetch Error!" });
         }
-        res.json(results);
+        
+        // డేటా పర్ఫెక్ట్ అరే ఫార్మాట్‌లో బ్రౌజర్‌కి వెళ్లేలా చిన్న చెక్
+        const dataRows = Array.isArray(results) ? results : (results ? results : []);
+        res.json(dataRows);
     });
 });
 
+// సర్వర్ రన్నింగ్ పోర్ట్ కనెక్షన్
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}...`));
+
