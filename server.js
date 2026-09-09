@@ -9,7 +9,7 @@ app.use(cors());
 // Aiven క్లౌడ్ MySQL డేటాబేస్ కనెక్షన్ సెట్టింగ్స్ (100% పర్ఫెక్ట్ సింటాక్స్)
 // పాస్‌వర్డ్‌ను నేరుగా రాయకుండా క్లౌడ్ సెట్టింగ్స్ నుండి రీడ్ చేయడానికి ఈ మార్పు బ్రో
 const db = mysql.createConnection({
-    host: '://aivencloud.com', // ఇక్కడ ఈ పూర్తి పెద్ద అడ్రస్ ఉండాలి బ్రో, పాత చుక్కలు తీసేయాలి
+   host: '://aivencloud.com', // ఇక్కడ ఈ పూర్తి పెద్ద అడ్రస్ ఉండాలి బ్రో, పాత చుక్కలు తీసేయాలి 
     user: 'avnadmin',       
     password: process.env.DB_PASSWORD,       
     database: 'defaultdb', 
