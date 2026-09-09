@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Studio to MySQL Project</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; text-align: center; }
-        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); display: inline-block; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); display: inline-block; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; }
         button:hover { background-color: #0056b3; }
         #status { margin-top: 15px; font-weight: bold; color: green; }
     </style>
@@ -15,38 +15,35 @@
 <body>
 
     <div class="container">
-        <h2>నా గూగుల్ AI ప్రాజెక్ట్ వెబ్‌సైట్</h2>
-        <p>కింద ఉన్న బటన్ నొక్కితే JSON డేటా MySQL డేటాబేస్‌లో సేవ్ అవుతుంది.</p>
+        <h2>My Google AI Project Website</h2>
+        <p>Clicking the button below will save the JSON data to the MySQL database.</p>
         
-        <button onclick="sendDataToDatabase()">డేటాను MySQL లో సేవ్ చేయి</button>
+        <button onclick="sendDataToDatabase()">Save data in MySQL</button>
         <div id="status"></div>
     </div>
 
     <script>
         async function sendDataToDatabase() {
             const statusDiv = document.getElementById('status');
-            statusDiv.innerText = "డేటా పంపుతున్నాము...";
+            statusDiv.innerText = "Sending data...";
 
             try {
-                // మీ .json ఫైల్‌ను వెబ్‌సైట్‌లోకి రీడ్ చేయడం
+                // 读取 data.json 文件
                 const responseJson = await fetch('data.json'); 
                 const jsonData = await responseJson.json();
 
-                // ఆ డేటాను బ్యాకెండ్ సర్వర్‌కి (Node.js) పంపడం
-                        // ఇది నీ వెబ్‌సైట్ ఏ ఆన్‌లైన్ URL లో రన్ అవుతుందో ఆ అడ్రస్‌ను ఆటోమేటిక్‌గా తీసుకుంటుంది బ్రో
-        const result = await fetch('/api/save-json', {
-
+                // 发送数据到 Render 后端
+                const result = await fetch('/api/save-json', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(jsonData)
                 });
 
                 const data = await result.json();
-                        statusDiv.innerText = "✅ JSON data saved successfully to Aiven Cloud!";
-
+                statusDiv.innerText = "✅ JSON data saved successfully to Aiven Cloud!";
             } catch (error) {
                 console.error(error);
-                statusDiv.innerText = "❌ ఎర్రర్ వచ్చింది! (బ్యాకెండ్ సర్వర్ రన్ అవుతుందో లేదో చెక్ చేయండి)";
+                statusDiv.innerText = "❌ An error occurred! (Check if the backend server is running)";
             }
         }
     </script>
