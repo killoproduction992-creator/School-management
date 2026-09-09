@@ -8,16 +8,12 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(__dirname));
 
-const mysql = require('mysql2');
-
-// ఈ కింద ఉన్న 'const db = ...' కోడ్‌కి పైన 'const mysql = ...' అని ఉంటే దాన్ని తీసేయండి.
-
 const db = mysql.createPool({
-    host: process.env.DB_HOST || '://aivencloud.com',
-    user: process.env.DB_USER || 'avnadmin',
-    password: process.env.DB_PASSWORD, 
-    database: process.env.DB_NAME || 'defaultdb',
-    port: parseInt(process.env.DB_PORT) || 13743,
+    host: 'mysql-16c0f46e-killoproduction992-5a4d.e.aivencloud.com',
+    user: 'avnadmin',
+    password: 'YOUR_AIVEN_PASSWORD',
+    database: 'defaultdb',
+    port: 13743,
     ssl: {
         rejectUnauthorized: false
     },
@@ -25,27 +21,6 @@ const db = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0
 });
-
-db.getConnection((err, connection) => {
-    if (err) {
-        console.error('Database connection failed:', err.message);
-    } else {
-        console.log('Aiven MySQL Database Connected Successfully! 🚀');
-        connection.release();
-    }
-});
-
-
-// కనెక్షన్ కరెక్ట్‌గా అయిందో లేదో Render Logs లో చూడటానికి ఈ చిన్న టెస్ట్ కోడ్ కింద ఉంచండి
-db.getConnection((err, connection) => {
-    if (err) {
-        console.error('Database connection failed:', err.message);
-    } else {
-        console.log('Aiven MySQL Database Connected Successfully! 🚀');
-        connection.release();
-    }
-});
-
 
 // Save JSON
 app.post("/api/save-json", (req, res) => {
