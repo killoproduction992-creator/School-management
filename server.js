@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(express.static(__dirname));
 
 // Aiven క్లౌడ్ MySQL డేటాబేస్ కనెక్షన్ సెట్టింగ్స్ (100% పర్ఫెక్ట్ సింటాక్స్)
 // పాస్‌వర్డ్‌ను నేరుగా రాయకుండా క్లౌడ్ సెట్టింగ్స్ నుండి రీడ్ చేయడానికి ఈ మార్పు బ్రో
