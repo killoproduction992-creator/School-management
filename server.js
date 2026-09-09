@@ -7,34 +7,25 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static(__dirname));
 
-// Aiven క్లౌడ్ MySQL డేటాబేస్ కనెక్షన్ సెట్టింగ్స్ (100% పర్ఫెక్ట్ సింటాక్స్)
-// పాస్‌వర్డ్‌ను నేరుగా రాయకుండా క్లౌడ్ సెట్టింగ్స్ నుండి రీడ్ చేయడానికి ఈ మార్పు బ్రో
-const db = mysql.createConnection({
-   host: '://aivencloud.com', // ఇక్కడ ఈ పూర్తి పెద్ద అడ్రస్ ఉండాలి బ్రో, పాత చుక్కలు తీసేయాలి 
+// 100% పర్ఫెక్ట్ కనెక్షన్ పూల్ (ఇది కనెక్షన్‌ని ఎప్పటికీ క్లోజ్ అవ్వనివ్వదు బ్రో!)
+const db = mysql.createPool({
+    host: process.env.DB_HOST || '://aivencloud.com',       
     user: 'avnadmin',       
-    password: process.env.DB_PASSWORD,       
+    password: process.env.DB_PASSWORD || 'AVNS_BALZVt0VnvmtF9kyJvF',       
     database: 'defaultdb', 
     port: 13743,
     ssl: {
         rejectUnauthorized: false
-    }
+    },
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-
-
-db.connect((err) => {
-    if (err) {
-        console.error('Database connection failed: ' + err.stack);
-        return;
-    }
-    console.log('✅ MySQL Database Connected to Aiven Cloud!');
-});
-
-// వెబ్‌సైట్ నుండి JSON డేటా తీసుకోవడానికి API ఎండ్‌పాయింట్
+// వెబ్‌సైట్ నుండి JSON డేటా తీసుకొని క్లౌడ్ లో సేవ్ చేయడానికి API
 app.post('/api/save-json', (req, res) => {
     const fullJsonData = JSON.stringify(req.body); 
     
-    // Aiven క్లౌడ్ డేటాబేస్‌లో 'ai_data' టేబుల్ లేకపోతే క్రియేట్ చేయడానికి ఒక క్వెరీ
     const createTableQuery = `
         CREATE TABLE IF NOT EXISTS ai_data (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -45,15 +36,14 @@ app.post('/api/save-json', (req, res) => {
 
     db.query(createTableQuery, (tableErr) => {
         if (tableErr) {
-            console.error("Table creation error:", tableErr);
+            console.error("❌ Table creation error:", tableErr);
             return res.status(500).json({ error: "Database Table Error!" });
         }
 
-        // టేబుల్ ఉన్నాక డేటా ఇన్సర్ట్ చేయడం
         const insertQuery = "INSERT INTO ai_data (json_content) VALUES (?)"; 
         db.query(insertQuery, [fullJsonData], (err, result) => {
             if (err) {
-                console.error("Insert error:", err);
+                console.error("❌ Insert error:", err);
                 return res.status(500).json({ error: "Database Insert Error!" });
             }
             res.json({ message: "JSON data saved successfully to Aiven Cloud!" });
@@ -61,14 +51,7 @@ app.post('/api/save-json', (req, res) => {
     });
 });
 
-// వెబ్‌సైట్ ఓపెన్ చేసినప్పుడు ఆటోమేటిక్‌గా index.html పేజీని చూపించడానికి ఈ కోడ్
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
-
-const PORT = process.env.PORT || 10000;
-// క్లౌడ్ డేటాబేస్ నుండి సేవ్ అయిన డేటాను వెనక్కి తెచ్చి వెబ్‌సైట్‌కి ఇవ్వడానికి API
-// క్లౌడ్ డేటాబేస్ నుండి సేవ్ అయిన డేటాను సురక్షితంగా తెచ్చి వెబ్‌సైట్‌కి ఇవ్వడానికి పర్ఫెక్ట్ API
+// క్లౌడ్ డేటాబేస్ నుండి సేవ్ అయిన డేటాను సురక్షితంగా తెచ్చి వెబ్‌సైట్‌కి ఇవ్వడానికి API
 app.get('/api/get-json', (req, res) => {
     const fetchQuery = "SELECT * FROM ai_data ORDER BY id DESC";
     
@@ -78,12 +61,15 @@ app.get('/api/get-json', (req, res) => {
             return res.status(500).json({ error: "Database Fetch Error!" });
         }
         
-        // డేటా పర్ఫెక్ట్ అరే ఫార్మాట్‌లో బ్రౌజర్‌కి వెళ్లేలా చిన్న చెక్
         const dataRows = Array.isArray(results) ? results : (results ? results : []);
         res.json(dataRows);
     });
 });
 
-// సర్వర్ రన్నింగ్ పోర్ట్ కనెక్షన్
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}...`));
+// వెబ్‌సైట్ ఓపెన్ చేసినప్పుడు ఆటోమేటిక్‌గా index.html పేజీని చూపించడానికి ఈ కోడ్
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
 
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}...`));
