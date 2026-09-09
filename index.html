@@ -42,7 +42,8 @@
                 });
 
                 const data = await result.json();
-                statusDiv.innerText = "✅ " + data.message;
+                        statusDiv.innerText = "✅ JSON data saved successfully to Aiven Cloud!";
+
             } catch (error) {
                 console.error(error);
                 statusDiv.innerText = "❌ ఎర్రర్ వచ్చింది! (బ్యాకెండ్ సర్వర్ రన్ అవుతుందో లేదో చెక్ చేయండి)";
