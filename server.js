@@ -8,10 +8,11 @@ app.use(cors());
 app.use(express.static(__dirname));
 
 // 100% పర్ఫెక్ట్ కనెక్షన్ పూల్ (ఇది కనెక్షన్‌ని ఎప్పటికీ క్లోజ్ అవ్వనివ్వదు బ్రో!)
+// Aiven క్లౌడ్ డేటాబేస్ డైరెక్ట్ కనెక్షన్ పూల్ (ఎప్పటికీ క్లోజ్ అవ్వదు బ్రో)
 const db = mysql.createPool({
-    host: process.env.DB_HOST || '://aivencloud.com',       
+    host: '://aivencloud.com',       
     user: 'avnadmin',       
-    password: process.env.DB_PASSWORD || 'AVNS_BALZVt0VnvmtF9kyJvF',       
+    password: 'AVNS_BALZVt0VnvmtF9kyJvF',       
     database: 'defaultdb', 
     port: 13743,
     ssl: {
@@ -21,6 +22,7 @@ const db = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0
 });
+
 
 // వెబ్‌సైట్ నుండి JSON డేటా తీసుకొని క్లౌడ్ లో సేవ్ చేయడానికి API
 app.post('/api/save-json', (req, res) => {
