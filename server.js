@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use(express.static(__dirname));
+app.use(express.static(__dirname, { index: false }));
 
 const db = mysql.createPool({
     host: process.env.DB_HOST,
