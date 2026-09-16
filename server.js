@@ -112,6 +112,28 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
+// 1. ఎవరైనా సైట్ ఓపెన్ చేయగానే ఫస్ట్ LOGIN PAGE ఓపెన్ అవుతుంది
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+// 2. లాగిన్ సక్సెస్ అయ్యాక మాత్రమే index.html (టేబుల్ పేజీ) ఓపెన్ అవ్వడానికి రూట్
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// 3. లాగిన్ క్రిడెన్షియల్స్ చెక్ చేసే API
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+
+    // ఇక్కడ నీకు నచ్చిన యూజర్ నేమ్, పాస్‌వర్డ్ సెట్ చేసుకో బ్రో (ప్రస్తుతానికి admin, 12345 ఇచ్చాను)
+    if (username === 'admin' && password === '12345') {
+        res.json({ success: true, redirectUrl: '/dashboard' });
+    } else {
+        res.json({ success: false, message: 'Invalid Username or Password!' });
+    }
+});
+
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}...`);
