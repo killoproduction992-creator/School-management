@@ -9,19 +9,16 @@ app.use(cors());
 app.use(express.static(__dirname));
 
 const db = mysql.createPool({
-    // ఇక్కడ పూర్తి హోస్ట్ అడ్రస్ కరెక్ట్‌గా ఇచ్చాను బ్రో, ఒకసారి చూసుకోండి
-    host: process.env.DB_HOST || '://aivencloud.com',
-    user: process.env.DB_USER || 'avnadmin',
-    password: process.env.DB_PASSWORD || 'AVNS_8A1ZVt0VnvmtF9kyJvF', 
-    database: process.env.DB_NAME || 'defaultdb',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     port: parseInt(process.env.DB_PORT) || 13743,
     ssl: {
         rejectUnauthorized: false
-    },
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+    }
 });
+
 
 
 // కనెక్షన్ విజయవంతం అయిందో లేదో మన లోకల్ టెర్మినల్‌లో చూడటానికి
